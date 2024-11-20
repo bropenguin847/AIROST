@@ -1,25 +1,41 @@
 //to do:
-// test out motor
 // test out ir sensor
 // assemble sensor on car chassis
 
 #include <WiFi.h>
+#include <ESP32Servo.h>
+#include "BluetoothSerial.h"
+// #include "carMovement.h"
 const char* ssid = "sirKamalWIFI";
 const char* password = "REPLACE_WITH_YOUR_PASSWORD";
 
-const int led = 2;
-int irleft = 15;
-int irright = 17;
-
+// for reference
 int motorleft1 = 27;
 int motorleft2 = 26;
-int motorleftEn;
+int motorleftEn = 14;
+int leftspeed = 150; /////////////////////////////////////////////////////
 
-int motorright1 = 33;
-int motorright2 = 25;
-int motorrightEn;
+int motorright1 = 25;
+int motorright2 = 33;
+int motorrightEn = 32;
+int rightspeed = 170; /////////////////////////////////////////////////////
+// int motorspeed;
 
-int motorspeed = 100;
+int led = 2;
+int irleft = 15;
+int irright = 18;
+
+Servo servo;
+int servoPin = 13;
+
+int potpin = 4; // use potentiometer to determine the speed of car, the hardcode the speed into the code
+int potvalue = 0;
+
+// Setting PWM properties
+const int freq = 30000;
+const int resolution = 8;
+const int pwmChannel = 0;
+int dutyCycle = 0;
 
 void forward(){
   digitalWrite(motorleft1, HIGH);
@@ -27,7 +43,6 @@ void forward(){
   digitalWrite(motorright1, HIGH);
   digitalWrite(motorright2, LOW);
 }
-
 void reverse(){
   digitalWrite(motorleft1, LOW);
   digitalWrite(motorleft2, HIGH); 
@@ -35,24 +50,7 @@ void reverse(){
   digitalWrite(motorright2, HIGH);
 }
 
-void goleft(){
-  digitalWrite(motorleft1, LOW);
-  digitalWrite(motorleft2, LOW); 
-  digitalWrite(motorright1, HIGH);
-  digitalWrite(motorright2, LOW);
-}
-
-void goright(){
-  digitalWrite(motorleft1, HIGH);
-  digitalWrite(motorleft2, LOW); 
-  digitalWrite(motorright1, LOW);
-  digitalWrite(motorright2, LOW);
-}
-
 void stopcar(){
-  ledcWrite(motorleftEn, 0);
-  ledcWrite(motorrightEn, 0);
-
   digitalWrite(motorleft1, LOW);
   digitalWrite(motorleft2, LOW); 
   digitalWrite(motorright1, LOW);
@@ -69,44 +67,32 @@ void setup() {
   pinMode(motorright2, OUTPUT);
   pinMode(irleft, INPUT);
   pinMode(irright, INPUT);
+  servo.attach(servoPin);
+  ledcAttachChannel(motorleftEn, freq, resolution, pwmChannel);
+  ledcAttachChannel(motorrightEn, freq, resolution, pwmChannel);
+  // ledcWrite(motorleftEn, 255);  // to kickstart the motor, if speed too low, then it wont run
+  // ledcWrite(motorrightEn, 255);
+  // forward();
+  // delay(100);
+  // ledcWrite(motorleftEn, 250);  // to kickstart the motor, if speed too low, then it wont run
+  // ledcWrite(motorrightEn, 250);
+  // forward();
+  // digitalWrite(led, HIGH);  //indicate car stopping, can setup
+  // delay(4000);
+  // digitalWrite(led, LOW);
 
-  // ledcAttach(motorleftEn, freq, resolution);
-  // ledcAttach(motorrightEn, freq, resolution);
-    
-  // Initialize PWM with 0 duty cycle
-  // car doesn't move
-  // ledcWrite(motorleftEn, 0);
-  // ledcWrite(motorrightEn, 0);
-
-  // WiFi.mode(WIFI_STA);
-  // WiFi.begin(ssid, password);
-  // Serial.print("Connecting to WiFi ..");
 }
 
 void loop() {
-  forward();
-  digitalWrite(led,LOW);
-  Serial.println("Now going forward");
-  delay(5000);
-
+  // potvalue = analogRead(potpin);
+  // motorspeed = map(potvalue, 0, 4095, 0, 255);
+  digitalWrite(led, LOW);
+  ledcWrite(motorrightEn, 205);
+  ledcWrite(motorleftEn, 205);
   reverse();
-  Serial.println("Now going backwards");
-  delay(5000);
+  // delay(6000);
 
-  goleft();
-  Serial.println("Now going left");
-  delay(5000);
-
-  goright();
-  Serial.println("Now right");
-  delay(5000);
-
-  stopcar();
-  Serial.println("Car will stop");
-  digitalWrite(led,HIGH);
-  delay(5000);
-
-  // int readvalue = analogRead(irleft); // Set the GPIO as Input
-  // Serial.println(readvalue);
-  // delay(800);
+  // stopcar();
+  // digitalWrite(led, HIGH);
+  // delay(7000);
 }
