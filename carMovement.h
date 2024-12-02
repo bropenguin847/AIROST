@@ -17,6 +17,13 @@ const int resolution = 8;
 const int pwmChannel = 0;
 int dutyCycle = 0;
 
+void setupMotor(){
+  pinMode(motorleft1, OUTPUT);
+  pinMode(motorleft2, OUTPUT);
+  pinMode(motorright1, OUTPUT);
+  pinMode(motorright2, OUTPUT);
+}
+
 void forward(){
   digitalWrite(motorleft1, HIGH);
   digitalWrite(motorleft2, LOW); 

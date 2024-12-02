@@ -1,6 +1,6 @@
 // my hotspot password
-const char* ssid = "sirKamalWIFI";
-const char* password = "69420sbeve";
+const char* ssid = "yayyayyay";
+const char* password = "NiXiang GanMa";
 
 void startOTA(){
     WiFi.mode(WIFI_STA);

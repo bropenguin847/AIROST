@@ -1,19 +1,20 @@
-//to do:
-// test out ir sensor
-// assemble sensor on car chassis
-
-#include <WiFi.h>
-#include <ESP32Servo.h>
+#include <Servo.h>
+// #include <WiFi.h>
+// #include <ESP32Servo.h>
 #include <ArduinoOTA.h>
+// #include <WebServer.h>
 #include "carMovement.h"
 #include "esp32OTA.h"
+#include "lineFollow.h"
 
 int led = 2;
-int irleft = 15;
-int irright = 18;
 
-Servo servo;
-int servoPin = 13;
+int manual = 4;
+int manual_status;
+int grip_button = 5;
+int grip;
+
+Servo servo;    // Attach at pin 13
 
 void setup() {
   Serial.begin(115200);
@@ -22,13 +23,12 @@ void setup() {
 
   // Setting up pins
   pinMode(led, OUTPUT);
-  pinMode(motorleft1, OUTPUT);
-  pinMode(motorleft2, OUTPUT);
-  pinMode(motorright1, OUTPUT);
-  pinMode(motorright2, OUTPUT);
-  pinMode(irleft, INPUT);
-  pinMode(irright, INPUT);
-  servo.attach(servoPin);
+  setupMotor();
+  setupIR();
+  pinMode(manual, INPUT);
+  pinMode(grip_button, INPUT);
+
+  servo.attach(13);
   ledcAttachChannel(motorleftEn, freq, resolution, pwmChannel);
   ledcAttachChannel(motorrightEn, freq, resolution, pwmChannel);
   ledcWrite(motorrightEn, motorspeed);
@@ -37,12 +37,31 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
+  manual_status = digitalRead(manual);
+  while(manual_status == 1){
+    // Perform manual control over here
+    grip = digitalRead(grip_button);
+    if (grip == 1){   // When button is pushed, gripper will close and grab item
+      servo.write(90);
+    }
+    else{             // Else, gripper will open
+      servo.write(0);
+    }
+    
+    manual_status = digitalRead(manual);
+  }
 
-  // test out motor
-  forward();
-  delay(4000);
-  reverse();
-  delay(4000);
-  stopcar();
-  delay(4000);
+  reading();
+  // if (leftside == 0 && rightside == 0){
+  //   forward();
+  // }
+  // if (leftside == 0 && rightside == 1){
+  //   goright();
+  // }
+  // if (leftside == 1 && rightside == 0){
+  //   goleft();
+  // }
+  // if (leftside == 1 && rightside == 1){
+  //   stopcar();
+  // }
 }
