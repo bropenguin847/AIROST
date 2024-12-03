@@ -8,8 +8,9 @@ void setupIR(){
 }
 
 void reading(){
-  leftside = analogRead(irleft);
-  rightside = analogRead(irright);
-  Serial.println(leftside);
+  leftside = digitalRead(irleft);
+  rightside = digitalRead(irright);
+  Serial.print(leftside);
   Serial.println(rightside);
+  delay(100);
 }
