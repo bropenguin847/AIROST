@@ -6,7 +6,7 @@ int motorright1 = 25;
 int motorright2 = 33;
 int motorrightEn = 32;
 
-int motorspeed = 205;
+int motorspeed = 255;
 // If motor speed too fast, then IR sensor might have trouble doing line following
 // worth a discussion on motor speed. If speed too slow, the motor wont
 // start up. So far i found that speed 205 is okay
