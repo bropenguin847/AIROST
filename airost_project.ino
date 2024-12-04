@@ -1,8 +1,8 @@
-// #include <Servo.h>
 #include <WiFi.h>
+#include <WebServer.h>
 #include <ESP32Servo.h>
 // #include <ArduinoOTA.h>
-#include <WebServer.h>
+#include "website.h"
 #include "carMovement.h"
 #include "esp32OTA.h"
 #include "lineFollow.h"
@@ -14,8 +14,6 @@ int manual_status;
 int grip_button = 5;
 int grip;
 
-Servo servo;    // Attach at pin 13
-
 void setup() {
   Serial.begin(115200);
   Serial.println("Ok start working");
@@ -25,10 +23,12 @@ void setup() {
   pinMode(led, OUTPUT);
   setupMotor();
   setupIR();
+  servosetup();
+  setuponline();
+
   pinMode(manual, INPUT);
   pinMode(grip_button, INPUT);
 
-  servo.attach(13);
   ledcAttachChannel(motorleftEn, freq, resolution, pwmChannel);
   ledcAttachChannel(motorrightEn, freq, resolution, pwmChannel);
   ledcWrite(motorrightEn, motorspeed);
@@ -37,16 +37,11 @@ void setup() {
 
 void loop() {
   // ArduinoOTA.handle();
+  digitalWrite(led, LOW);
   manual_status = digitalRead(manual);
   while(manual_status == 1){
-    // Perform manual control over here
-    grip = digitalRead(grip_button);
-    if (grip == 1){   // When button is pushed, gripper will close and grab item
-      servo.write(90);
-    }
-    else{             // Else, gripper will open
-      servo.write(0);
-    }
+    servoonline();
+    digitalWrite(led, HIGH);
     manual_status = digitalRead(manual);
   }
 
@@ -56,9 +51,11 @@ void loop() {
   }
   if (leftside == 0 && rightside == 1){
     goright();
+    delay(1500);
   }
   if (leftside == 1 && rightside == 0){
-    goleft(); 
+    goleft();
+    delay(1500);
   }
   if (leftside == 0 && rightside == 0){
     forward();
