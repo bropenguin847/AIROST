@@ -19,18 +19,17 @@ void setupMotor(){
   pinMode(motorright2, OUTPUT);
   ledcAttachChannel(motorleftEn, freq, resolution, pwmChannel);
   ledcAttachChannel(motorrightEn, freq, resolution, pwmChannel);
-
 }
 
 void forward(){
   motorspeed = 255; //kickstart motor
   ledcWrite(motorrightEn, motorspeed);
   ledcWrite(motorleftEn, motorspeed);
-  delay(100);
-  digitalWrite(motorleft1, HIGH);
-  digitalWrite(motorleft2, LOW); 
   digitalWrite(motorright1, HIGH);
   digitalWrite(motorright2, LOW);
+  digitalWrite(motorleft1, HIGH);
+  digitalWrite(motorleft2, LOW);
+
   motorspeed = 205;
   ledcWrite(motorrightEn, motorspeed);
   ledcWrite(motorleftEn, motorspeed);
@@ -40,7 +39,6 @@ void reverse(){
   motorspeed = 255; //kickstart motor
   ledcWrite(motorrightEn, motorspeed);
   ledcWrite(motorleftEn, motorspeed);
-  delay(100);
   digitalWrite(motorleft1, LOW);
   digitalWrite(motorleft2, HIGH); 
   digitalWrite(motorright1, LOW);
@@ -64,6 +62,7 @@ void goright(){
   motorspeed = 255;
   ledcWrite(motorrightEn, motorspeed);
   ledcWrite(motorleftEn, motorspeed);
+
   digitalWrite(motorleft1, HIGH);
   digitalWrite(motorleft2, LOW); 
   digitalWrite(motorright1, LOW);
