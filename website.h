@@ -1,14 +1,16 @@
 #include <WiFi.h>
 #include <ESP32Servo.h>
+#include <WebServer.h>
 
-Servo myservo;    // Attach at pin 16
+Servo myservo;    // Attach at pin 18
+int servopin = 13;
 
-// GPIO the servo is attached to
-static const int servoPin = 13;
-
-// Replace with your network credentials
 const char* ssid     = "LAPTOP-UPM4QH47 6598";
 const char* password = "Halo Halo Bonjour";
+
+IPAddress staticIP(192, 168, 137, 71); // ESP32 static IP
+IPAddress gateway(192, 168, 137, 1);    // IP Address of your network gateway (router)
+IPAddress subnet(255, 255, 255, 0);   // Subnet mask
 
 // Set web server port number to 80
 WiFiServer server(80);
@@ -29,9 +31,7 @@ unsigned long previousTime = 0;
 const long timeoutTime = 2000;
 
 void servosetup() {
-  myservo.attach(16);
-}
-void setuponline(){
+  myservo.attach(servopin);
   // Connect to Wi-Fi network with SSID and password
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -43,7 +43,13 @@ void setuponline(){
   // Print local IP address and start web server
   Serial.println("");
   Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
+  if(!WiFi.config(staticIP, gateway, subnet)) {
+    Serial.println("Failed to configure Static IP");
+  } else {
+    Serial.println("Static IP configured!");
+  }
+ 
+  Serial.print("ESP32 IP Address: ");
   Serial.println(WiFi.localIP());
   server.begin();
 }
@@ -80,7 +86,7 @@ void servoonline(){
             // CSS to style the on/off buttons 
             // Feel free to change the background-color and font-size attributes to fit your preferences
             client.println("<style>body { text-align: center; font-family: \"Trebuchet MS\", Arial; margin-left:auto; margin-right:auto;}");
-            client.println(".slider { width: 300px; }</style>");
+            client.println(".slider { width: 600px; }</style>");
             client.println("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>");
                      
             // Web Page

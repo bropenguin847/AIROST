@@ -1,13 +1,9 @@
-#include <WiFi.h>
-#include <WebServer.h>
-#include <ESP32Servo.h>
-// #include <ArduinoOTA.h>
 #include "website.h"
 #include "carMovement.h"
 #include "esp32OTA.h"
 #include "lineFollow.h"
 
-int led = 2;
+int BUILTIN_LED = 2;
 
 int manual = 4;
 int manual_status;
@@ -20,11 +16,11 @@ void setup() {
   // startOTA();   // OTA will begin
 
   // Setting up pins
-  pinMode(led, OUTPUT);
+  pinMode(BUILTIN_LED, OUTPUT);
   setupMotor();
   setupIR();
   servosetup();
-  setuponline();
+  servoonline();
 
   pinMode(manual, INPUT);
   pinMode(grip_button, INPUT);
@@ -37,11 +33,11 @@ void setup() {
 
 void loop() {
   // ArduinoOTA.handle();
-  digitalWrite(led, LOW);
+  digitalWrite(BUILTIN_LED, LOW);
   manual_status = digitalRead(manual);
-  while(manual_status == 1){
+  while(manual_status){
     servoonline();
-    digitalWrite(led, HIGH);
+    digitalWrite(BUILTIN_LED, HIGH);
     manual_status = digitalRead(manual);
   }
 

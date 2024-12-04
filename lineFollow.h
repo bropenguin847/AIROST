@@ -1,5 +1,5 @@
-int irleft = 18;
-int irright = 19;
+int irleft = 17;
+int irright = 16;
 int leftside, rightside;
 
 void setupIR(){
