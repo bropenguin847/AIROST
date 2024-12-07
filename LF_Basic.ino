@@ -1,7 +1,9 @@
 #include <BluetoothSerial.h>
 BluetoothSerial Bluetooth;
-#include <ArduinoOTA.h>
 #include <WiFi.h>
+#include <ESPmDNS.h>
+#include <NetworkUdp.h>
+#include <ArduinoOTA.h>
 #include "carMovement.h"
 
 // const char* ssid     = "LAPTOP-UPM4QH47 6598";
@@ -19,7 +21,6 @@ char command;
 void setup() {
   Serial.begin(115200);
   Bluetooth.begin("ESP32_LF_Car");
-  startOTA();
 
   pinMode(motorleftEn, OUTPUT);
   pinMode(in1, OUTPUT);
@@ -40,7 +41,7 @@ void loop() {
   if(command == 'A'){
     //forward
     if ((digitalRead(left2) == 1) && (digitalRead(left1) == 1) && (digitalRead(center) == 0) && (digitalRead(right1) == 1) && (digitalRead(right2) == 1)) {
-      motorspeed = 130;//slower speed
+      motorspeed = 120;//slower speed
       forward();
     }
     //goright
@@ -50,7 +51,7 @@ void loop() {
     //sharp right
     if ((digitalRead(left2) == 1) && (digitalRead(left1) == 1) && (digitalRead(center)==0) && (digitalRead(right1) == 0) && (digitalRead(right2) == 0)) {
       lineright();
-      delay(500);
+      delay(475);
     }
 
     //goleft
@@ -60,10 +61,13 @@ void loop() {
     //sharp left
     if ((digitalRead(left2) == 0) && (digitalRead(left1) == 0) && (digitalRead(center)==0) && (digitalRead(right1) == 1) && (digitalRead(right2) == 1)) {  //sharp left turn
       lineleft();
-      delay(500);
+      delay(475);
     }
-    if ((digitalRead(left2) == 0) && (digitalRead(left1) == 0) && (digitalRead(center)==0) && (digitalRead(right1) == 0) && (digitalRead(right2) == 0)) {
+    if ((digitalRead(left1) == 0) && (digitalRead(center)==0) && (digitalRead(right1) == 0)){
+      reverse();
+      delay(50);
       stopcar();
+      delay(200);
     }
   }
 
@@ -123,8 +127,8 @@ void goright() {  //turnRight
 }
 
 void lineright(){
-  analogWrite(motorleftEn, 220);
-  analogWrite(motorrightEn, 100);
+  analogWrite(motorleftEn, 200);
+  analogWrite(motorrightEn, 110);
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
   digitalWrite(in3, LOW);
@@ -132,8 +136,8 @@ void lineright(){
 }
 
 void lineleft(){
-  analogWrite(motorleftEn, 100);
-  analogWrite(motorrightEn, 220);
+  analogWrite(motorleftEn, 110);
+  analogWrite(motorrightEn, 200);
   digitalWrite(in1, LOW);
   digitalWrite(in2, HIGH);
   digitalWrite(in3, HIGH);
@@ -158,48 +162,49 @@ void stopcar() {
   digitalWrite(in4, LOW);
 }
 
-void startOTA(){
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  ArduinoOTA.setPassword("random");
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
-  ArduinoOTA.onStart([]() {
-    String type;
-    if (ArduinoOTA.getCommand() == U_FLASH) {
-      type = "sketch";
-    } else {  // U_SPIFFS
-      type = "filesystem";
-    }
+// void startOTA(){
+//   WiFi.mode(WIFI_STA);
+//   WiFi.begin(ssid, password);
+//   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
+//     Serial.println("Connection Failed! Rebooting...");
+//     delay(5000);
+//     ESP.restart();
+//   }
+//   ArduinoOTA.setPassword("random");
+//   ArduinoOTA
+//     .onStart([]() {
+//     String type;
+//     if (ArduinoOTA.getCommand() == U_FLASH) {
+//       type = "sketch";
+//     } else {  // U_SPIFFS
+//       type = "filesystem";
+//     }
 
-    // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-    Serial.println("Start updating " + type);
-    })
-    .onEnd([]() {
-      Serial.println("\nEnd");
-    })
-    .onProgress([](unsigned int progress, unsigned int total) {
-      Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
-    })
-    .onError([](ota_error_t error) {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) {
-        Serial.println("Auth Failed");
-      } else if (error == OTA_BEGIN_ERROR) {
-        Serial.println("Begin Failed");
-      } else if (error == OTA_CONNECT_ERROR) {
-        Serial.println("Connect Failed");
-      } else if (error == OTA_RECEIVE_ERROR) {
-        Serial.println("Receive Failed");
-      } else if (error == OTA_END_ERROR) {
-        Serial.println("End Failed");
-      }
-    });
-  ArduinoOTA.begin();
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-}
+//     // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+//     Serial.println("Start updating " + type);
+//     })
+//     .onEnd([]() {
+//       Serial.println("\nEnd");
+//     })
+//     .onProgress([](unsigned int progress, unsigned int total) {
+//       Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+//     })
+//     .onError([](ota_error_t error) {
+//       Serial.printf("Error[%u]: ", error);
+//       if (error == OTA_AUTH_ERROR) {
+//         Serial.println("Auth Failed");
+//       } else if (error == OTA_BEGIN_ERROR) {
+//         Serial.println("Begin Failed");
+//       } else if (error == OTA_CONNECT_ERROR) {
+//         Serial.println("Connect Failed");
+//       } else if (error == OTA_RECEIVE_ERROR) {
+//         Serial.println("Receive Failed");
+//       } else if (error == OTA_END_ERROR) {
+//         Serial.println("End Failed");
+//       }
+//     });
+//   ArduinoOTA.begin();
+//   Serial.println("Ready");
+//   Serial.print("IP address: ");
+//   Serial.println(WiFi.localIP());
+// }
