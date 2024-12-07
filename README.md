@@ -6,3 +6,4 @@ Our project is IoT line tracking car, with automatic/manual switching mode and a
 
 This project uses Both wifi and bluetooth communication
 All the codes can be configured and uploaded via Arduino IDE software
+![image](https://github.com/user-attachments/assets/7a79ab6d-3543-4665-bac2-d486bfbb33b4)
