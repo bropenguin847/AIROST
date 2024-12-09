@@ -1,7 +1,7 @@
 // #include <ArduinoOTA.h>
 // my hotspot password
-// const char* ssid = "yayyayyay";
-// const char* password = "NiXiang GanMa";
+// const char* ssid = "xxx";
+// const char* password = "xxx";
 
 
 // void startOTA(){
