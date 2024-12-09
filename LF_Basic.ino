@@ -6,10 +6,10 @@ BluetoothSerial Bluetooth;
 #include <ArduinoOTA.h>
 #include "carMovement.h"
 
-// const char* ssid     = "LAPTOP-UPM4QH47 6598";
-// const char* password = "Halo Halo Bonjour";
-char ssid[] = "LIM_ILLEGEAR 9590";
-char password[] = "7623H879";
+// const char* ssid     = "xxx;
+// const char* password = "xxx";
+char ssid[] = "xxx";
+char password[] = "xxx";
 
 int motorspeed = 140;
 int gripper_status = 0;
